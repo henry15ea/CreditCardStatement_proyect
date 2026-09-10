@@ -5,7 +5,6 @@
 ![JWT](https://img.shields.io/badge/Auth-JWT-black?logo=json-web-tokens)
 ![Clean Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-success)
 
-Aplicacion full-stack desarrollada como prueba tecnica para la posicion de Desarrollador de Servicios Web. Muestra estados de cuenta de tarjetas de credito con seguimiento de compras, procesamiento de pagos y calculos financieros automatizados.
 
 ## Descripcion
 
@@ -216,12 +215,6 @@ Una vez ejecutando ambos proyectos:
 | Aplicacion MVC | https://localhost:5001 |
 | Health Check | https://localhost:7001/health |
 
-### Credenciales por Defecto
-
-| Usuario | Email | Contrasena |
-|---------|-------|------------|
-| Henry Aquino | henry.aq@mail.com | contrasena123 |
-| Henry Guzman | henry.guz@mail.com | contrasena123 |
 
 ### Flujo de Uso Tipico
 
@@ -275,22 +268,6 @@ CreditCardStatement/
 └── README.md                                 # Este archivo
 ```
 
-## Documentacion
-
-La carpeta `docs/` contiene la documentacion tecnica completa del proyecto:
-
-| Documento | Contenido |
-|-----------|-----------|
-| [docs/README.md](docs/README.md) | Guia general del proyecto |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitectura, patrones y flujo de datos |
-| [docs/API.md](docs/API.md) | Documentacion completa de endpoints |
-| [docs/DATABASE.md](docs/DATABASE.md) | Modelo de datos, scripts SQL y SPs |
-| [docs/SETUP.md](docs/SETUP.md) | Guia de instalacion y configuracion detallada |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Opciones de despliegue (Docker, Azure) |
-| [docs/TESTING.md](docs/TESTING.md) | Guia de pruebas (Postman, cURL, UI) |
-| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Convenciones de codigo y flujo de trabajo |
-| [docs/CHANGELOG.md](docs/CHANGELOG.md) | Historial de cambios |
-| [docs/UML_DIAGRAMS.md](docs/UML_DIAGRAMS.md) | Diagramas UML en PlantUML |
 
 ## Autor
 
