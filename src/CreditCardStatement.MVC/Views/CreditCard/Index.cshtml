@@ -1,0 +1,287 @@
+@model CreditCardStatement.MVC.ViewModels.StatementViewModel
+
+@{
+    ViewData["Title"] = "Estado de Cuenta";
+    var creditCards = ViewBag.CreditCards as CreditCardStatement.MVC.ViewModels.CreditCardSelectorViewModel;
+}
+
+<div class="container py-4">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+        <div>
+            <h2 class="section-title mb-0"><i class="fas fa-chart-line"></i> Estado de Cuenta</h2>
+            <p class="text-muted mb-0 mt-1">Consulta el resumen financiero de tu tarjeta</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            @if (Model.CreditCardId > 0)
+            {
+                <button class="btn btn-bank-outline" onclick="exportPdf()">
+                    <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="card-bank p-3 mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold small text-muted">Tarjeta de Credito</label>
+                <select id="creditCardSelect" class="form-select form-bank" onchange="loadStatement()">
+                    <option value="">-- Seleccionar tarjeta --</option>
+                    @if (creditCards?.CreditCards != null)
+                    {
+                        @foreach (var card in creditCards.CreditCards)
+                        {
+                            <option value="@card.Id" selected="@(card.Id == Model.CreditCardId)">
+                                ****@card.CardNumber.Substring(card.CardNumber.Length - 4) - @card.CurrentBalance.ToString("C")
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold small text-muted">Mes</label>
+                <select id="monthSelect" class="form-select form-bank" onchange="loadStatement()">
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m" selected="@(m == Model.SelectedMonth)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold small text-muted">Ano</label>
+                <select id="yearSelect" class="form-select form-bank" onchange="loadStatement()">
+                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--)
+                    {
+                        <option value="@y" selected="@(y == Model.SelectedYear)">@y</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.CreditCardId > 0)
+    {
+        <div class="row g-4 mb-4">
+            <div class="col-lg-5">
+                <div class="real-credit-card">
+                    <div class="card-bank-name">Mi Banco Online</div>
+                    <div class="card-top">
+                        <div class="card-chip"></div>
+                        <i class="fas fa-wifi contactless" style="transform: rotate(90deg);"></i>
+                    </div>
+                    <div class="card-number-display">
+                        **** **** **** @Model.CardNumber.Substring(Model.CardNumber.Length - 4)
+                    </div>
+                    <div class="card-bottom">
+                        <div class="card-holder-info">
+                            <div class="label">Titular</div>
+                            <div class="value">@Model.CardHolderName</div>
+                        </div>
+                        <div class="card-brand">
+                            <i class="fab fa-cc-visa"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="card-bank h-100 kpi-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="card-title">Saldo Disponible</div>
+                                        <div class="card-value">@Model.AvailableBalance.ToString("C")</div>
+                                        <div class="card-subtext">Limite: @Model.CreditLimit.ToString("C")</div>
+                                    </div>
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(46,204,113,0.12);">
+                                        <i class="fas fa-wallet text-success"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="card-bank h-100 kpi-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="card-title">Saldo Actual</div>
+                                        <div class="card-value">@Model.CurrentBalance.ToString("C")</div>
+                                        <div class="card-subtext">Al dia de hoy</div>
+                                    </div>
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(52,152,219,0.12);">
+                                        <i class="fas fa-credit-card text-info"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="card-bank h-100 kpi-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="card-title">Cuota Minima</div>
+                                        <div class="card-value">@Model.MinimumPayment.ToString("C")</div>
+                                        <div class="card-subtext">Vence proximamente</div>
+                                    </div>
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(243,156,18,0.12);">
+                                        <i class="fas fa-calendar-alt text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="card-bank h-100 border-primary" style="border-left: 4px solid var(--bank-primary) !important;">
+                            <div class="card-body text-center d-flex flex-column justify-content-center">
+                                <div class="card-title">Total a Pagar</div>
+                                <div class="card-value" style="font-size: 1.75rem; color: var(--bank-primary);">@Model.TotalToPay.ToString("C")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card-bank h-100">
+                    <div class="card-body">
+                        <div class="card-title">Compras del Mes</div>
+                        <div class="card-value text-primary">@Model.TotalPurchasesCurrentMonth.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card-bank h-100">
+                    <div class="card-body">
+                        <div class="card-title">Compras Mes Anterior</div>
+                        <div class="card-value">@Model.TotalPurchasesPreviousMonth.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card-bank h-100 kpi-danger">
+                    <div class="card-body">
+                        <div class="card-title">Interes Bonificable (25%)</div>
+                        <div class="card-value">@Model.BonifiableInterest.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card-bank h-100 kpi-danger">
+                    <div class="card-body">
+                        <div class="card-title">Contado con Intereses</div>
+                        <div class="card-value">@Model.CashPaymentWithInterest.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-bank">
+            <div class="card-body p-0">
+                <div class="d-flex align-items-center justify-content-between p-3 border-bottom flex-wrap gap-2">
+                    <span class="fw-bold text-dark"><i class="fas fa-list-ul me-2 text-muted"></i>Transacciones</span>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Purchases", new { creditCardId = Model.CreditCardId, month = Model.SelectedMonth, year = Model.SelectedYear })" class="btn btn-bank-outline btn-sm">
+                            <i class="fas fa-plus me-1"></i>Compra
+                        </a>
+                        <a href="@Url.Action("Payments", new { creditCardId = Model.CreditCardId, month = Model.SelectedMonth, year = Model.SelectedYear })" class="btn btn-bank-success btn-sm">
+                            <i class="fas fa-money-bill-wave me-1"></i>Pago
+                        </a>
+                        <a href="@Url.Action("History", new { creditCardId = Model.CreditCardId, month = Model.SelectedMonth, year = Model.SelectedYear })" class="btn btn-bank-outline btn-sm">
+                            <i class="fas fa-history me-1"></i>Historial
+                        </a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bank mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Descripcion</th>
+                                <th>Tipo</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Transactions.Any())
+                            {
+                                @foreach (var t in Model.Transactions)
+                                {
+                                    <tr>
+                                        <td>@t.Date.ToString("dd/MM/yyyy")</td>
+                                        <td>@t.Description</td>
+                                        <td>
+                                            @if (t.Type == "Purchase")
+                                            {
+                                                <span class="badge-bank badge-bank-danger"><i class="fas fa-shopping-cart me-1"></i>Compra</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-bank badge-bank-success"><i class="fas fa-arrow-down me-1"></i>Pago</span>
+                                            }
+                                        </td>
+                                        <td class="text-end fw-semibold @(t.Type == "Purchase" ? "text-danger" : "text-success")">
+                                            @(t.Type == "Purchase" ? "-" : "+")@t.Amount.ToString("C")
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                        No se encontraron transacciones
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card-bank p-5 text-center">
+            <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Selecciona una tarjeta para ver el estado de cuenta</h5>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function loadStatement() {
+            var cardId = document.getElementById('creditCardSelect').value;
+            var month = document.getElementById('monthSelect').value;
+            var year = document.getElementById('yearSelect').value;
+
+            if (cardId) {
+                window.location.href = '/CreditCard?creditCardId=' + cardId + '&month=' + month + '&year=' + year;
+            }
+        }
+
+        function exportPdf() {
+            var cardId = document.getElementById('creditCardSelect').value;
+            var month = document.getElementById('monthSelect').value;
+            var year = document.getElementById('yearSelect').value;
+
+            if (cardId) {
+                window.open('/CreditCard/ExportPdf?creditCardId=' + cardId + '&month=' + month + '&year=' + year, '_blank');
+            }
+        }
+    </script>
+}

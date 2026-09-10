@@ -1,0 +1,68 @@
+@model List<CreditCardStatement.MVC.ViewModels.TransactionViewModel>
+
+@{
+    ViewData["Title"] = "Historial de Transacciones";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+        <div>
+            <h2 class="section-title mb-0"><i class="fas fa-history"></i> Historial de Transacciones</h2>
+            <p class="text-muted mb-0 mt-1">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName((int)ViewBag.Month) @ViewBag.Year</p>
+        </div>
+        <a href="@Url.Action("Index", new { creditCardId = ViewBag.CreditCardId, month = ViewBag.Month, year = ViewBag.Year })" class="btn btn-bank-outline">
+            <i class="fas fa-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+
+    <div class="card-bank">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripcion</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var t in Model)
+                            {
+                                <tr>
+                                    <td>@t.Date.ToString("dd/MM/yyyy")</td>
+                                    <td>@t.Description</td>
+                                    <td>
+                                        @if (t.Type == "Purchase")
+                                        {
+                                            <span class="badge-bank badge-bank-danger"><i class="fas fa-shopping-cart me-1"></i>Compra</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-bank badge-bank-success"><i class="fas fa-arrow-down me-1"></i>Pago</span>
+                                        }
+                                    </td>
+                                    <td class="text-end fw-semibold @(t.Type == "Purchase" ? "text-danger" : "text-success")">
+                                        @(t.Type == "Purchase" ? "-" : "+")@t.Amount.ToString("C")
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                    No se han encontrado movimientos realizados
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

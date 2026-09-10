@@ -1,0 +1,59 @@
+@model CreditCardStatement.MVC.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar sesion";
+    Layout = "_Layout";
+}
+
+<div class="login-page">
+    <div class="login-left d-none d-md-flex">
+        <div class="login-left-content">
+            <i class="fas fa-university fa-4x mb-4 opacity-75"></i>
+            <h1>Mi Banco Online</h1>
+            <p>Gestiona tus tarjetas de credito de forma segura y rapida desde cualquier lugar.</p>
+        </div>
+    </div>
+    <div class="login-right">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="fas fa-university fa-2x text-primary mb-2"></i>
+                <h3>Bienvenido</h3>
+                <p class="subtitle">Ingresa tus credenciales para continuar</p>
+            </div>
+
+            <form asp-action="Login" method="post" class="form-bank">
+                <div asp-validation-summary="All" class="text-danger mb-3" style="font-size: 0.85rem;"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Correo electronico</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="fas fa-envelope text-muted"></i></span>
+                        <input asp-for="Email" class="form-control border-start-0" type="email" placeholder="nombre@ejemplo.com" required />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger" style="font-size: 0.8rem;"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label">Contrasena</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                        <input asp-for="Password" class="form-control border-start-0" type="password" placeholder="********" required />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger" style="font-size: 0.8rem;"></span>
+                </div>
+
+                <button type="submit" class="btn btn-bank-primary w-100 py-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesion
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <small class="text-muted">Sistema seguro de banca en linea</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
