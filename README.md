@@ -5,6 +5,11 @@
 ![JWT](https://img.shields.io/badge/Auth-JWT-black?logo=json-web-tokens)
 ![Clean Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-success)
 
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/e551652f-42a7-4c83-9db8-9a1c2e0b8022" />
+
+
+<img width="1151" height="863" alt="image" src="https://github.com/user-attachments/assets/ae25dc76-a545-4c06-89f2-7a08b490b517" />
+
 
 ## Descripcion
 
