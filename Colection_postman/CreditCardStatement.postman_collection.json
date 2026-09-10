@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "Credit Card Statement API",
+    "description": "API collection for Credit Card Statement application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:7001"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"henry.aq@mail.com\",\n  \"password\": \"contraseña123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Credit Cards",
+      "item": [
+        {
+          "name": "Get Credit Cards",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.length > 0) {",
+                  "    pm.environment.set('creditCardId', jsonData[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/creditcard/cards/1",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Statement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Statement returned successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('creditCard');",
+                  "    pm.expect(jsonData).to.have.property('bonifiableInterest');",
+                  "    pm.expect(jsonData).to.have.property('minimumPayment');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/creditcard/statement/{{creditCardId}}?month=9&year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "creditcard", "statement", "{{creditCardId}}"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "9"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/creditcard/transactions/{{creditCardId}}?month=9&year=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "creditcard", "transactions", "{{creditCardId}}"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "9"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Purchase",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/creditcard/purchase",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"creditCardId\": {{creditCardId}},\n  \"date\": \"2026-09-04\",\n  \"description\": \"Test Purchase\",\n  \"amount\": 25.50\n}"
+            }
+          }
+        },
+        {
+          "name": "Make Payment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/creditcard/payment",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"creditCardId\": {{creditCardId}},\n  \"date\": \"2026-09-04\",\n  \"amount\": 50.00\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    }
+  ]
+}
